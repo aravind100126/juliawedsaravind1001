@@ -103,7 +103,60 @@
     text-transform:uppercase; opacity:0.85; line-height:1.2;
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
-  @media (max-width:700px){
+  /* ---- DESKTOP: scattered in the empty side margins ----
+     Above 900px there is plenty of blank space either side of the
+     text column, so the photos move out into those margins. The text
+     is capped at 470px and the photos are confined to the outer ~20%
+     of each side, so the two can never meet. Below 900px this whole
+     block switches off and the in-flow staggered columns take over. */
+  @media (min-width:580px){
+    .cover{ padding:60px 20px; }
+    .cover-content{ max-width:300px; margin-left:auto; margin-right:auto; }
+    .photo-collage{
+      position:absolute; inset:0; margin:0; max-width:none;
+      display:block; z-index:1; pointer-events:none;
+    }
+    .photo-col{ display:block; margin-top:0 !important; gap:0; }
+    .photo-frame{
+      position:absolute; width:78px;
+      box-shadow:0 16px 34px rgba(0,0,0,0.45);
+    }
+    .photo-frame .cap{ font-size:8px; }
+
+    /* left margin */
+    .pos-1{ top:7%;  left:3.5%; transform:rotate(-7deg); }
+    .pos-2{ top:31%; left:9%;   transform:rotate(5deg); }
+    .pos-5{ top:55%; left:3%;   transform:rotate(-4deg); }
+    .pos-6{ top:78%; left:9.5%; transform:rotate(6deg); }
+    /* right margin */
+    .pos-3{ top:10%; right:3.5%; transform:rotate(7deg); }
+    .pos-4{ top:38%; right:9.5%; transform:rotate(-6deg); }
+    .pos-7{ top:70%; right:3%;   transform:rotate(5deg); }
+  }
+
+  @media (min-width:700px){
+    .cover-content{ max-width:380px; }
+    .photo-frame{ width:84px; }
+  }
+  @media (min-width:900px){
+    .cover-content{ max-width:440px; }
+    .photo-frame{ width:96px; }
+  }
+  @media (min-width:1100px){
+    .cover-content{ max-width:470px; }
+    .photo-frame{ width:112px; }
+    .pos-2{ left:10.5%; }
+    .pos-6{ left:11%; }
+    .pos-4{ right:11%; }
+  }
+  @media (min-width:1400px){
+    .photo-frame{ width:124px; }
+    .pos-2{ left:12%; }
+    .pos-6{ left:12.5%; }
+    .pos-4{ right:12.5%; }
+  }
+
+  @media (max-width:579px){
     .photo-collage{ gap:9px; margin-top:26px; }
     .photo-col{ gap:9px; }
     .photo-col.col-b{ margin-top:22px; }
@@ -676,7 +729,7 @@
     document.getElementById('photoCollage').innerHTML = cols.map(function(col, c){
       return '<div class="photo-col '+names[c]+'">'+
         col.map(function(p){
-          return '<div class="photo-frame">'+
+          return '<div class="photo-frame pos-'+(TRAVEL_PHOTOS.indexOf(p)+1)+'">'+
             '<div class="photo-area"><img src="'+TRAVEL_IMG[p.key]+'" alt="'+p.label+'"></div>'+
             '<div class="cap">'+p.label+'</div>'+
           '</div>';
@@ -689,11 +742,24 @@
   renderSchedule('goettingenItinerary', GOETTINGEN_SCHEDULE);
 
 
+  // Reveal each stamp card as soon as ANY part of it enters the viewport.
+  // A threshold based on a percentage of the card fails on narrow screens,
+  // where a card can be taller than the viewport and never reach it.
   const cards = document.querySelectorAll('.stamp-card');
-  const obs = new IntersectionObserver((entries)=>{
-    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in-view'); });
-  }, { threshold: 0.35 });
-  cards.forEach(c=>obs.observe(c));
+  function revealAll(){ cards.forEach(c=>c.classList.add('in-view')); }
+
+  if ('IntersectionObserver' in window) {
+    const obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) { e.target.classList.add('in-view'); obs.unobserve(e.target); }
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -40px 0px' });
+    cards.forEach(function(c){ obs.observe(c); });
+    // Safety net: never leave content permanently hidden.
+    setTimeout(revealAll, 3000);
+  } else {
+    revealAll();
+  }
 </script>
 </body>
 </html>
