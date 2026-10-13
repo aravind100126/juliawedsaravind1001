@@ -1,3 +1,4 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -134,6 +135,11 @@
     .pos-7{ top:70%; right:3%;   transform:rotate(5deg); }
   }
 
+  /* 580-699px: frames are at their narrowest, so ease the caption
+     tracking a touch to stop longer labels being cut off. */
+  @media (min-width:580px) and (max-width:699px){
+    .photo-frame .cap{ font-size:7px; letter-spacing:0; }
+  }
   @media (min-width:700px){
     .cover-content{ max-width:380px; }
     .photo-frame{ width:84px; }
@@ -190,6 +196,115 @@
   @media (max-width:360px){
     .photo-collage{ gap:6px; }
     .photo-frame{ width:clamp(74px, 26vw, 96px); }
+  }
+
+  /* ---------------- COUNTDOWN ----------------
+     Four postage stamps stuck on by hand, echoing the polaroids on
+     the cover. Perforated edges are cut with a mask where supported
+     and fall back to a clean edge where not. */
+  .countdown{
+    background:var(--india-deep);
+    padding:52px 22px 54px;
+    position:relative; overflow:hidden;
+    border-top:1px dashed rgba(231,200,96,0.28);
+    border-bottom:1px dashed rgba(231,200,96,0.28);
+  }
+  .countdown::before{
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background:radial-gradient(ellipse at 50% 0%, rgba(231,200,96,0.10), transparent 62%);
+  }
+  .cd-inner{ position:relative; z-index:2; max-width:600px; margin:0 auto; text-align:center; }
+  .cd-lead{
+    font-family:var(--font-serif); font-size:23px; line-height:1.3;
+    color:var(--gold-soft); margin-bottom:26px;
+  }
+  .cd-lead .de{
+    display:block; font-size:15px; font-style:italic;
+    color:var(--off); opacity:0.7; margin-top:4px;
+  }
+
+  .cd-strip{
+    display:grid; grid-template-columns:repeat(4,1fr);
+    gap:14px; justify-items:center;
+    filter:drop-shadow(0 10px 20px rgba(0,0,0,0.45));
+  }
+  .cd-stamp{
+    position:relative; width:100%; max-width:clamp(100px, 12vw, 132px);
+    background:var(--cream); color:var(--ink);
+    padding:17px 8px 13px; border-radius:2px;
+  }
+  /* the inner frame real commemorative stamps carry */
+  .cd-stamp::after{
+    content:''; position:absolute; inset:5px;
+    border:1px dashed rgba(34,28,18,0.30); border-radius:1px; pointer-events:none;
+  }
+  /* hand-stuck: each at its own slight angle, like the cover photos */
+  .cd-stamp.s1{ transform:rotate(-2.4deg); }
+  .cd-stamp.s2{ transform:rotate(1.6deg); }
+  .cd-stamp.s3{ transform:rotate(-1.2deg); }
+  .cd-stamp.s4{ transform:rotate(2.2deg); }
+
+  /* punched perforations along all four edges */
+  @supports ((-webkit-mask-composite: source-out) or (mask-composite: subtract)){
+    .cd-stamp{
+      --perf:3.6px; --pitch:11px;
+      -webkit-mask:
+        radial-gradient(var(--perf) at 50% 0, #0000 97%, #000) 0 0/var(--pitch) 100%,
+        radial-gradient(var(--perf) at 50% 100%, #0000 97%, #000) 0 0/var(--pitch) 100%,
+        radial-gradient(var(--perf) at 0 50%, #0000 97%, #000) 0 0/100% var(--pitch),
+        radial-gradient(var(--perf) at 100% 50%, #0000 97%, #000) 0 0/100% var(--pitch);
+      -webkit-mask-composite:source-in;
+      mask:
+        radial-gradient(var(--perf) at 50% 0, #0000 97%, #000) 0 0/var(--pitch) 100%,
+        radial-gradient(var(--perf) at 50% 100%, #0000 97%, #000) 0 0/var(--pitch) 100%,
+        radial-gradient(var(--perf) at 0 50%, #0000 97%, #000) 0 0/100% var(--pitch),
+        radial-gradient(var(--perf) at 100% 50%, #0000 97%, #000) 0 0/100% var(--pitch);
+      mask-composite:intersect;
+    }
+  }
+
+  .cd-num{
+    display:block; font-family:var(--font-serif); font-weight:600;
+    font-size:clamp(29px, 8.5vw, 44px); line-height:1; color:var(--ink);
+    font-variant-numeric:tabular-nums; letter-spacing:-0.01em;
+  }
+  .cd-unit{
+    display:block; margin-top:7px;
+    font-family:var(--font-mono); font-size:8.5px; letter-spacing:0.1em;
+    text-transform:uppercase; color:var(--ink); opacity:0.72; line-height:1.3;
+  }
+  .cd-unit .en{ display:block; opacity:0.62; margin-top:1px; }
+
+  /* the tick: the digit that just changed settles into place */
+  .cd-num.tick{ animation:cdTick 0.42s cubic-bezier(.2,.9,.3,1); }
+  @keyframes cdTick{
+    0%{ transform:translateY(-26%); opacity:0; }
+    55%{ opacity:1; }
+    100%{ transform:translateY(0); opacity:1; }
+  }
+
+  .cd-sr{
+    position:absolute; width:1px; height:1px; overflow:hidden;
+    clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap;
+  }
+
+  /* the day itself, and afterwards */
+  .countdown.cd-now .cd-strip,
+  .countdown.cd-done .cd-strip{ display:none; }
+  .countdown.cd-now .cd-lead,
+  .countdown.cd-done .cd-lead{ margin-bottom:0; font-size:27px; }
+
+  @media (max-width:420px){
+    .countdown{ padding:44px 18px 46px; }
+    .cd-lead{ font-size:20px; margin-bottom:22px; }
+    .cd-lead .de{ font-size:14px; }
+    .cd-strip{ grid-template-columns:repeat(2,1fr); gap:14px 16px; max-width:300px; margin:0 auto; }
+    .cd-stamp{ max-width:130px; padding:16px 8px 13px; }
+    .cd-unit{ font-size:9px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .cd-num.tick{ animation:none; }
   }
 
   /* ---------------- STAMP PAGE FEATURE PHOTO ---------------- */
@@ -335,6 +450,66 @@
   .rsvp-cta-note{ font-size:13px; line-height:1.6; opacity:0.75; margin-top:14px; }
   .rsvp-cta-note .de{ display:block; opacity:0.85; margin-top:4px; }
 
+  /* ---------------- TRAUZEUGEN / WITNESSES ----------------
+     Names sit above a dashed rule, the way a witness signs a
+     document. Deliberately uncarded, so it stays quieter than
+     the boxes either side of it. */
+  .witnesses{ margin-top:46px; text-align:center; }
+  .witnesses h4{ font-family:var(--font-serif); font-size:24px; line-height:1.25; color:var(--gold-soft); margin:0; }
+  .witnesses h4 .de{ display:block; font-size:15px; font-style:italic; color:var(--off); opacity:0.7; margin-top:4px; }
+  .story .witnesses .witness-note{
+    font-size:13.5px; line-height:1.6; color:var(--off); opacity:0.85;
+    border:none; padding:0; margin-top:14px;
+  }
+  .story .witnesses .witness-note.de,
+  .story .witnesses .witness-note.ta{ margin-top:9px; opacity:0.75; }
+  .witness-cols{ display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:30px; }
+  .witness-names{
+    display:flex; flex-direction:column; justify-content:flex-end; min-height:62px;
+    font-family:var(--font-serif); font-size:20px; line-height:1.45; color:var(--off);
+    padding-bottom:10px; border-bottom:1px dashed rgba(231,200,96,0.5);
+  }
+  .witness-for{
+    font-family:var(--font-mono); font-size:9.5px; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--gold-soft); opacity:0.85; margin-top:9px; line-height:1.4;
+  }
+  .witness-for .en{ display:block; color:var(--off); opacity:0.6; margin-top:2px; letter-spacing:0.08em; }
+  .witness-contact{ display:block; font-family:var(--font-body); font-size:11.5px;
+    text-transform:none; letter-spacing:0; color:var(--off); opacity:0.7; margin-top:5px; }
+  .witness-org{ max-width:280px; margin:26px auto 0; }
+  .witness-org .witness-names{ min-height:0; }
+  @media (max-width:520px){
+    .witnesses h4{ font-size:21px; }
+    .witness-cols{ grid-template-columns:1fr; gap:24px; margin-top:26px; }
+    .witness-names{ min-height:0; font-size:19px; }
+  }
+
+  /* ---------------- WHATSAPP GROUP ---------------- */
+  .whatsapp-box{
+    margin-top:42px; padding:26px 22px; text-align:center;
+    border:1px dashed rgba(231,200,96,0.45); border-radius:10px;
+    background:rgba(255,255,255,0.03);
+  }
+  .whatsapp-box .wa-icon{ width:30px; height:30px; margin-bottom:10px; }
+  .whatsapp-box h5{ font-family:var(--font-serif); font-size:22px; line-height:1.25; color:var(--gold-soft); margin:0; }
+  .whatsapp-box h5 .de{ display:block; font-size:14px; font-style:italic; color:var(--off); opacity:0.7; margin-top:4px; }
+  .story .whatsapp-box p{
+    font-size:13.5px; line-height:1.6; color:var(--off); opacity:0.85;
+    border:none; padding:0; margin-top:12px;
+  }
+  .story .whatsapp-box p + p{ margin-top:9px; opacity:0.78; }
+  .wa-cta{
+    display:inline-block; margin-top:20px; padding:13px 26px; border-radius:8px;
+    text-decoration:none; font-family:var(--font-serif); font-size:19px; font-weight:600;
+    color:var(--gold-soft); border:1px solid rgba(231,200,96,0.7); background:transparent;
+    transition:background 0.15s ease, color 0.15s ease;
+  }
+  .wa-cta:hover{ background:var(--gold-soft); color:var(--ink); }
+  .wa-cta .sub{
+    display:block; font-family:var(--font-mono); font-size:9.5px; letter-spacing:0.1em;
+    text-transform:uppercase; opacity:0.8; margin-top:4px; font-weight:400;
+  }
+
   footer{ text-align:center; padding:50px 22px 70px; }
   footer .fmono{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:0.2em; color:var(--gold-soft); opacity:0.7; }
 
@@ -391,6 +566,22 @@
     </div>
   </div>
   <div class="scroll-cue">Open the invite ↓<span class="de">Einladung öffnen ↓</span></div>
+</section>
+
+<!-- ============ COUNTDOWN — a strip of four postage stamps ============ -->
+<section class="countdown" id="countdown">
+  <div class="cd-inner">
+    <p class="cd-lead" id="cdLead">Until we celebrate in Chennai<span class="de" id="cdLeadDe">Bis wir in Chennai feiern</span></p>
+
+    <div class="cd-strip" id="cdStrip" aria-hidden="true">
+      <div class="cd-stamp s1"><span class="cd-num" id="cdD">—</span><span class="cd-unit">Tage<span class="en">Days</span></span></div>
+      <div class="cd-stamp s2"><span class="cd-num" id="cdH">—</span><span class="cd-unit">Stunden<span class="en">Hours</span></span></div>
+      <div class="cd-stamp s3"><span class="cd-num" id="cdM">—</span><span class="cd-unit">Minuten<span class="en">Minutes</span></span></div>
+      <div class="cd-stamp s4"><span class="cd-num" id="cdS">—</span><span class="cd-unit">Sekunden<span class="en">Seconds</span></span></div>
+    </div>
+
+    <p class="cd-sr" id="cdSr"></p>
+  </div>
 </section>
 
 <section class="stamp-page india">
@@ -534,7 +725,7 @@
       <div class="stamp-city">Göttingen</div>
       <div class="stamp-date">12 · 06 · 2027</div>
       <div class="stamp-body">
-        <span class="de" style="display:block;">Aufgewachsen im kleinen Nest Herberhausen, dem „Bullerbü“ neben Göttingen, liebte Julia in ihrer Kindheit vor allem das Spielen draußen und in der Natur. Früh lernte sie außerdem das Klavierspiel und verschiedene Sportarten, in der Jugend besonders Judo. Naturverbundenheit, die Liebe zur Musik und zum Sport sind bis heute ein wichtiger Bestandteil ihres Lebens.</span>
+        <span class="de" style="display:block;">Aufgewachsen im kleinen Nest Herberhausen, dem „Bullerbü“ neben Göttingen, liebte Julia in ihrer Kindheit vor allem das Spielen draußen und in der Natur. Früh lernte sie außerdem das Klavierspiel und verschiedene Sportarten, in der Jugend besonders Judo. Naturverbundenheit, die Liebe zur Musik und zum Sport sind bis heute wichtige Bestandteile ihres Lebens.</span>
         <span style="display:block;margin-top:10px;">Growing up in the small hamlet of Herberhausen — the “Bullerbü” next to Göttingen — Julia loved playing outdoors and in nature more than anything as a child. She also learned piano early on, along with various sports, especially judo as a teenager. Her bond with nature and her love of music and sport remain an important part of her life to this day.</span>
         <span class="ta" style="display:block;margin-top:10px;">ஜூலியா கோட்டிங்கனுக்கு அருகிலுள்ள சிறிய கிராமமான ஹெர்பர்ஹௌசனில் — “புல்லர்பூ” எனப்படும் இடத்தில் — வளர்ந்தார். சிறுவயதில் அவருக்கு மிகவும் பிடித்தது வெளியிலும் இயற்கையிலும் விளையாடுவது. சிறுவயதிலேயே பியானோ வாசிக்க கற்றுக்கொண்டார், மேலும் பல்வேறு விளையாட்டுகளையும், இளமையில் குறிப்பாக ஜூடோவையும் பயின்றார். இயற்கையுடனான தொடர்பு, இசை மற்றும் விளையாட்டின் மீதான அன்பு ஆகியவை இன்றும் அவருடைய வாழ்க்கையின் முக்கிய பகுதியாக உள்ளன.</span>
       </div>
@@ -636,14 +827,34 @@
     <p>
       It began in Lisbon — golden light, cobbled streets, and a conversation that didn’t want to end. From there our story took the shape of a commute: back and forth between Frankfurt and Minden, weekend trains and late-night calls stitching two lives together, mile by mile. Now that same thread has pulled us all the way to Chennai and Göttingen, where two families, two languages, and two wedding traditions turn into wonderfully full days. We can’t wait to share it with you — in whichever city you can join us.
       <span class="de" style="display:block;margin-top:10px;">Es begann in Lissabon — goldenes Licht, Kopfsteinpflaster und ein Gespräch, das nicht enden wollte. Von dort nahm unsere Geschichte die Form eines Pendelns an: hin und her zwischen Frankfurt und Minden, Wochenendzüge und nächtliche Anrufe, die zwei Leben Kilometer für Kilometer zusammennähten. Nun hat uns genau dieser Faden bis nach Chennai und Göttingen geführt, wo zwei Familien, zwei Sprachen und zwei Hochzeitstraditionen zu mehreren wunderbaren Tagen werden. Wir können es kaum erwarten, sie mit euch zu teilen — in welcher Stadt auch immer ihr dabei sein könnt.</span>
-      <span class="ta" style="display:block;margin-top:10px;">எங்கள் கதை லிஸ்பனில் தொடங்கியது — பொன்னிற ஒளி, கல் பாவிய தெருக்கள், முடிவடைய விரும்பாத ஒரு உரையாடல். அங்கிருந்து, எங்கள் கதை ஒரு பயணத்தின் வடிவை எடுத்தது — ஃபிராங்க்ஃபர்ட்டுக்கும் மிண்டனுக்கும் இடையே அங்குமிங்கும், வார இறுதி ரயில் பயணங்களும் நள்ளிரவு அழைப்புகளும் இரண்டு வாழ்க்கைகளையும் மைல் மைலாக இணைத்தன. இப்போது, அதே இழை எங்களை சென்னை மற்றும் கோட்டிங்கன் வரை இழுத்து வந்துள்ளது, அங்கு இரண்டு குடும்பங்களும், இரண்டு மொழிகளும், இரண்டு திருமண மரபுகளும் நிறைவான நாட்களாக மாறுகின்றன. இதை உங்களுடன் பகிர்ந்துகொள்ள நாங்கள் ஆவலுடன் காத்திருக்கிறோம் — நீங்கள் இணையக்கூடிய எந்த நகரத்திலும்.</span>
     </p>
+
+    <!-- TRAUZEUGEN / WITNESSES. To show a contact under a name, add a div
+         with class witness-contact inside that name group. -->
+    <div class="witnesses">
+      <h4>Who to Ask<span class="de">Eure Ansprechpartner</span></h4>
+      <p class="witness-note">Planning a surprise, or have a question you would rather not ask us? Our witnesses know everything, and they are very good at keeping secrets. For anything about the organisation, Gayathri is the one to ask.</p>
+      <p class="witness-note de">Ihr plant eine Überraschung oder habt eine Frage, die ihr uns lieber nicht stellen möchtet? Unsere Trauzeugen wissen Bescheid — und können hervorragend Geheimnisse bewahren. Für alles rund um die Organisation ist Gayathri eure Ansprechpartnerin.</p>
+      <div class="witness-cols">
+        <div class="witness-group">
+          <div class="witness-names">Srinath Srinivasan<br>Leon Podehl</div>
+          <div class="witness-for">Trauzeugen für Aravind<span class="en">Aravind’s witnesses</span></div>
+        </div>
+        <div class="witness-group">
+          <div class="witness-names">Alisa Richter</div>
+          <div class="witness-for">Trauzeugin für Julia<span class="en">Julia’s witness</span></div>
+        </div>
+      </div>
+      <div class="witness-org">
+        <div class="witness-names">Gayathri Ramakrishnan</div>
+        <div class="witness-for">Fragen zur Organisation<span class="en">Questions about the organisation</span></div>
+      </div>
+    </div>
 
     <div class="cta-box">
       <div class="icon">✉</div>
-      <p><b>Rooms, travel &amp; gifts</b><br>For guests travelling from outside India, we have reserved rooms at the <b>Ideal Beach Resort</b> for <b>9 and 10 February</b>, so there is nothing for you to book. Just say yes in the questionnaire below and we will hold a room for you; the room itself is then settled directly with the resort.<br><br>It means the world to us that you would travel this far to celebrate with us, and we would love to make the journey as easy as we can. We are glad to help you find somewhere lovely to stay, arrange a pickup from Chennai airport, or plan your days around the wedding — just tell us in the questionnaire what would help. Flights, any extra nights and your stay in Göttingen are yours to arrange, and we are always happy to share tips and recommendations.<br><br>As for gifts: getting yourself to Chennai or Göttingen is already the most generous thing you could do. If you would like to give something on top of that, we would honestly rather have <b>money than a wrapped present</b> — it goes straight into the life we are building together, and it saves you carrying anything halfway around the world.</p>
-      <p class="de"><b>Zimmer, Anreise &amp; Geschenke</b><br>Für unsere Gäste aus dem Ausland haben wir im <b>Ideal Beach Resort</b> Zimmer für den <b>9. und 10. Februar</b> reserviert — ihr müsst also selbst nichts buchen. Sagt uns einfach im Fragebogen unten Bescheid, dann halten wir ein Zimmer für euch frei; die Kosten für das Zimmer rechnet ihr anschließend direkt mit dem Resort ab.<br><br>Dass ihr so weit reist, um mit uns zu feiern, bedeutet uns unglaublich viel — und wir möchten euch die Reise so leicht wie möglich machen. Gerne helfen wir euch, eine schöne Unterkunft zu finden, organisieren eure Abholung vom Flughafen in Chennai oder planen mit euch die Tage rund um die Hochzeit — schreibt uns einfach im Fragebogen, was euch hilft. Flüge, zusätzliche Nächte und die Unterkunft in Göttingen organisiert ihr selbst; Tipps und Empfehlungen geben wir euch jederzeit gern.<br><br>Und zu den Geschenken: Dass ihr den weiten Weg nach Chennai oder Göttingen auf euch nehmt, ist bereits das Großzügigste überhaupt. Wenn ihr darüber hinaus etwas schenken möchtet, freuen wir uns ehrlich gesagt mehr über <b>Geld als über ein verpacktes Geschenk</b> — es fließt direkt in unseren gemeinsamen Start, und ihr müsst nichts um die halbe Welt tragen.</p>
-      <p class="ta" style="margin-top:10px;"><b>அறைகள், பயணம் மற்றும் பரிசுகள்</b><br>இந்தியாவுக்கு வெளியே இருந்து வரும் விருந்தினர்களுக்கு, <b>ஐடியல் பீச் ரிசார்ட்டில்</b> பிப்ரவரி <b>9 மற்றும் 10 ஆகிய தேதிகளுக்கு</b> அறைகளை நாங்கள் முன்பதிவு செய்து வைத்துள்ளோம் — எனவே நீங்கள் தனியாக எதையும் பதிவு செய்ய வேண்டியதில்லை. கீழே உள்ள வினாவரியில் தெரிவித்தால், உங்களுக்கு ஒரு அறையை ஒதுக்கி வைப்போம்; அறைக்கான கட்டணத்தை நீங்கள் ரிசார்ட்டுடன் நேரடியாகச் செலுத்தலாம்.<br><br>எங்களுடன் கொண்டாட நீங்கள் இத்தனை தூரம் பயணம் செய்வது எங்களுக்கு மிகுந்த மகிழ்ச்சி. உங்கள் பயணத்தை முடிந்தவரை எளிதாக்க விரும்புகிறோம் — தங்குமிடம் தேடுவதற்கும், சென்னை விமான நிலையத்தில் உங்களை அழைத்து வருவதற்கும், திருமணத்தைச் சுற்றியுள்ள நாட்களைத் திட்டமிடுவதற்கும் நாங்கள் அன்புடன் உதவுவோம். வினாவரியில் தெரிவித்தால் போதும். விமான டிக்கெட்டுகள், கூடுதல் இரவுகள் மற்றும் கோட்டிங்கனில் தங்குமிடம் ஆகியவற்றை நீங்களே ஏற்பாடு செய்ய வேண்டும்; பரிந்துரைகளுக்கு நாங்கள் எப்போதும் தயார்.<br><br>பரிசுகள் பற்றி: சென்னைக்கோ கோட்டிங்கனுக்கோ நீங்கள் வருவதே மிகப்பெரிய கொடை. அதைத் தாண்டி ஏதாவது தர விரும்பினால், பொதிந்த பரிசைவிட <b>பணம் அளிப்பதையே</b> நாங்கள் விரும்புகிறோம் — அது நேரடியாக எங்கள் கூட்டு வாழ்க்கைக்குப் பயன்படும், மேலும் நீங்கள் எதையும் சுமந்து வர வேண்டியதில்லை.</p>
+      <p><b>Rooms, travel &amp; gifts</b><br>For guests travelling from outside India, we have reserved rooms at the <b>Ideal Beach Resort</b> for <b>9 and 10 February</b>, so there is nothing for you to book. Just say yes in the check-in below and we will hold a room for you; the room itself is then settled directly with the resort.<br><br>It means the world to us that you would travel this far to celebrate with us, and we would love to make the journey as easy as we can. We are glad to help you find somewhere lovely to stay, arrange a pickup from Chennai airport, or plan your days around the wedding — just tell us in the check-in what would help. Flights and any extra nights in Chennai are yours to arrange. For Göttingen, Julia can enquire about rooms on your behalf — first come, first served, so do tell us early in the check-in below.<br><br>As for gifts: getting yourself to Chennai or Göttingen is already the most generous thing you could do. If you would like to give something on top of that, we would honestly rather have <b>money than a wrapped present</b> — it goes straight into the life we are building together, and it saves you carrying anything halfway around the world.</p>
+      <p class="de"><b>Zimmer, Anreise &amp; Geschenke</b><br>Für unsere Gäste aus dem Ausland haben wir im <b>Ideal Beach Resort</b> Zimmer für den <b>9. und 10. Februar</b> reserviert — ihr müsst also selbst nichts buchen. Sagt uns einfach im Check-in unten Bescheid, dann halten wir ein Zimmer für euch frei; die Kosten für das Zimmer rechnet ihr anschließend direkt mit dem Resort ab.<br><br>Dass ihr so weit reist, um mit uns zu feiern, bedeutet uns unglaublich viel — und wir möchten euch die Reise so leicht wie möglich machen. Gerne helfen wir euch, eine schöne Unterkunft zu finden, organisieren eure Abholung vom Flughafen in Chennai oder planen mit euch die Tage rund um die Hochzeit — schreibt uns einfach im Check-in, was euch hilft. Flüge und zusätzliche Nächte in Chennai organisiert ihr selbst. Für Göttingen kann Julia Zimmer für euch anfragen — wer zuerst kommt, mahlt zuerst, sagt uns also gern früh im Check-in unten Bescheid.<br><br>Und zu den Geschenken: Dass ihr den weiten Weg nach Chennai oder Göttingen auf euch nehmt, ist bereits das Großzügigste überhaupt. Wenn ihr darüber hinaus etwas schenken möchtet, freuen wir uns ehrlich gesagt mehr über <b>Geld als über ein verpacktes Geschenk</b> — es fließt direkt in unseren gemeinsamen Start, und ihr müsst nichts um die halbe Welt tragen.</p>
     </div>
 
     <div class="guest-wall" id="rsvpWall">
@@ -651,17 +862,17 @@
 
 
       <div class="rsvp-note" style="margin-top:18px;">
-        Please reply through the questionnaire below by <b>30 November 2026</b> so that we can plan everything properly.
-        <span class="de">Bitte gebt uns über den Fragebogen unten bis zum <b>30. November 2026</b> Bescheid, damit wir alles gut planen können.</span>
+        Please fill in the questionnaire (check-in) below by <b>30 November 2026</b> so that we can plan everything properly.
+        <span class="de">Bitte füllt den Fragebogen (Check-in) unten bis zum <b>30. November 2026</b> aus, damit wir alles gut planen können.</span>
       </div>
 
       <!-- ============ THE FORM ============ -->
       <a class="rsvp-cta" id="rsvpButton" href="https://form.jotform.com/262811859544062">
-        <span class="cta-main">Zum Fragebogen · To the RSVP</span>
-        <span class="cta-sub">Deutsch &amp; English · பதிலளிக்கவும்</span>
+        <span class="cta-main">Check-in</span>
+        <span class="cta-sub">Deutsch &amp; English</span>
       </a>
       <div class="rsvp-cta-note">
-        It takes about three minutes, and you only see the questions that apply to you. Once you send it, a summary of your answers appears here — and a copy is emailed to you.
+        It takes about three minutes, and you’ll only see the questions that apply to you. Once you send it, a summary of your answers appears here — and a copy is emailed to you.
         <span class="de">Es dauert etwa drei Minuten — angezeigt werden nur die Fragen, die für euch relevant sind. Nach dem Absenden seht ihr eine Übersicht eurer Antworten, und eine Kopie kommt per E-Mail.</span>
       </div>
 
@@ -669,17 +880,138 @@
       <div class="rsvp-answers" id="rsvpAnswers" hidden>
         <h5>Danke! Eure Antworten<span class="de">Thank you! Your answers</span></h5>
         <dl id="rsvpAnswerList"></dl>
-        <a class="rsvp-open-link" href="https://form.jotform.com/262811859544062">Etwas ändern? Fragebogen erneut ausfüllen · Change something? Fill it in again</a>
+        <a class="rsvp-open-link" href="https://form.jotform.com/262811859544062">Check-in ändern · Change your check-in</a>
       </div>
+    </div>
+
+    <!-- ============ WHATSAPP GROUP ============
+         Hidden until a link is pasted into WHATSAPP_LINK in the script below. -->
+    <div class="whatsapp-box" id="whatsappBox" hidden>
+      <svg class="wa-icon" viewBox="0 0 24 24" fill="none" stroke="#E7C860" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M20.5 11.6a8.2 8.2 0 0 1-11.9 7.3L4 20.4l1.6-4.4A8.2 8.2 0 1 1 20.5 11.6z"/>
+        <line x1="8.8" y1="10.2" x2="15.2" y2="10.2"/>
+        <line x1="8.8" y1="13.4" x2="13.2" y2="13.4"/>
+      </svg>
+      <h5>Unsere WhatsApp-Gruppe<span class="de">Our WhatsApp group</span></h5>
+      <p>Hier läuft alles rund um die Hochzeit zusammen. Kommt gerne dazu!</p>
+      <p>This is where everything about the wedding comes together. Do join us.</p>
+      <a class="wa-cta" id="waCta" href="#" target="_blank" rel="noopener">
+        Gruppe beitreten
+        <span class="sub">Join the group</span>
+      </a>
     </div>
   </div>
 </section>
 
 <footer>
-  <div class="fmono">ARAVIND &amp; JULIA · 2027 <span style="opacity:.28;font-size:9px;letter-spacing:.08em;">v9</span></div>
+  <div class="fmono">ARAVIND &amp; JULIA · 2027</div>
 </footer>
 
 <script>
+  // ============================================================
+  // COUNTDOWN — counts to Chennai, then switches itself to
+  // Göttingen once Chennai has been and gone. Times carry their
+  // own UTC offset, so the countdown is correct from any country.
+  // ============================================================
+  const WEDDINGS = [
+    { at: "2027-02-09T08:30:00+05:30", en: "Chennai", de: "Chennai" },
+    { at: "2027-06-12T14:30:00+02:00", en: "Göttingen", de: "Göttingen" }
+  ];
+
+  (function(){
+    var sec = document.getElementById('countdown');
+    if (!sec) return;
+    var lead = document.getElementById('cdLead'),
+        leadDe = document.getElementById('cdLeadDe'),
+        srOut = document.getElementById('cdSr'),
+        out = { d:document.getElementById('cdD'), h:document.getElementById('cdH'),
+                m:document.getElementById('cdM'), s:document.getElementById('cdS') };
+    var events = WEDDINGS.map(function(w){ return { t:new Date(w.at).getTime(), en:w.en, de:w.de }; })
+                         .filter(function(w){ return !isNaN(w.t); })
+                         .sort(function(a,b){ return a.t - b.t; });
+    if (!events.length) { sec.remove(); return; }
+
+    var last = {}, lastDay = null;
+    var DAY = 864e5;
+
+    function put(key, value){
+      var el = out[key];
+      var text = String(value);
+      if (el.textContent === text) return;
+      el.textContent = text;
+      el.classList.remove('tick');
+      void el.offsetWidth;          // restart the animation
+      el.classList.add('tick');
+    }
+
+    function render(){
+      var now = Date.now();
+      // the celebration counts as "today" for its whole day
+      var next = events.find(function(e){ return e.t + DAY > now; });
+
+      if (!next){
+        sec.className = 'countdown cd-done';
+        lead.childNodes[0].nodeValue = 'Thank you for celebrating with us';
+        leadDe.textContent = 'Danke, dass ihr mitgefeiert habt';
+        srOut.textContent = '';
+        return false;
+      }
+
+      var left = next.t - now;
+      if (left <= 0){
+        sec.className = 'countdown cd-now';
+        lead.childNodes[0].nodeValue = 'Today, in ' + next.en;
+        leadDe.textContent = 'Heute, in ' + next.de;
+        srOut.textContent = 'Today in ' + next.en + '.';
+        return true;
+      }
+
+      sec.className = 'countdown';
+      lead.childNodes[0].nodeValue = 'Until we celebrate in ' + next.en;
+      leadDe.textContent = 'Bis wir in ' + next.de + ' feiern';
+
+      var d = Math.floor(left / DAY),
+          h = Math.floor(left / 36e5) % 24,
+          m = Math.floor(left / 6e4) % 60,
+          s = Math.floor(left / 1e3) % 60;
+      put('d', d);
+      put('h', h < 10 ? '0'+h : h);
+      put('m', m < 10 ? '0'+m : m);
+      put('s', s < 10 ? '0'+s : s);
+
+      // screen readers get the day count, not a number shouting every second
+      if (d !== lastDay){
+        lastDay = d;
+        srOut.textContent = d + ' days until the celebration in ' + next.en + '.';
+      }
+      return true;
+    }
+
+    if (render()){
+      var id = setInterval(function(){ if (!render()) clearInterval(id); }, 1000);
+      // a tab left in the background drifts; resync when it comes back
+      document.addEventListener('visibilitychange', function(){ if (!document.hidden) render(); });
+    }
+  })();
+
+  // ============================================================
+  // WHATSAPP GROUP LINK  <-- PASTE THE GROUP LINK BETWEEN THE QUOTES
+  // In WhatsApp: open the group, Group info, Invite via link, Copy link.
+  // It looks like  https://chat.whatsapp.com/XXXXXXXXXXXXXXXXXX
+  // While this is left empty the WhatsApp block stays hidden, so the
+  // invite never shows a button that leads nowhere.
+  // ============================================================
+  const WHATSAPP_LINK = "https://chat.whatsapp.com/KjUyrBBjpb9Fib1pneCPp2";
+
+  (function(){
+    var box = document.getElementById('whatsappBox');
+    if (!box) return;
+    var url = (typeof WHATSAPP_LINK === 'string' ? WHATSAPP_LINK : '').trim();
+    if (!/^https:\/\/chat\.whatsapp\.com\/\S+/i.test(url)) { box.remove(); return; }
+    document.getElementById('waCta').href = url;
+    box.hidden = false;
+  })();
+
   // ============================================================
   // SCHEDULE DATA — edit times, labels, and dress code below.
   // The page rebuilds the itinerary automatically from these arrays.
@@ -702,10 +1034,7 @@
       dressDe: "Traditionelle Kleidung ist herzlich willkommen.",
       items: [
         { time: "07:00 – 10:00", label: "Breakfast" },
-        { time: "08:00 – 09:00", label: "Kasi Yathra" },
-        { time: "09:00 – 10:00", label: "Maalai Exchange &amp; Oonjal" },
-        { time: "10:00 – 12:00", label: "Wedding preparations" },
-        { time: "12:30", label: "Muhurtham — the wedding" },
+        { time: "07:30 – 12:00", label: "Wedding ceremony" },
         { time: "13:00", label: "Lunch" }
       ]
     }
@@ -847,3 +1176,5 @@
 </script>
 </body>
 </html>
+
+</body></html>
